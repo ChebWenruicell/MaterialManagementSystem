@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="style.jsp" %>
 <%
-    // 临时关闭登录验证（仅用于查看界面）
-    // if (session.getAttribute("loginUser") == null) {
-    //     response.sendRedirect(request.getContextPath() + "/login.jsp");
-    //     return;
-    // }
+    // 权限控制：未登录跳转到登录页
+    //if (session.getAttribute("loginUser") == null) {
+     //   response.sendRedirect(request.getContextPath() + "/login.jsp");
+     //   return;
+   // }
 %>
 <div class="header">
     <div class="header-left">
@@ -13,10 +13,10 @@
     </div>
     <div class="header-right">
         <div class="user-info">
-            <div class="user-avatar">测</div>
-            <span>测试用户</span>
-            <span>(管理员)</span>
+            <div class="user-avatar">${sessionScope.loginUser.realName.substring(0,1)}</div>
+            <span>${sessionScope.loginUser.realName}</span>
+            <span>(${sessionScope.loginUser.role == 'admin' ? '系统管理员' : sessionScope.loginUser.role})</span>
         </div>
-        <a href="${pageContext.request.contextPath}/login.jsp" class="logout-btn">退出登录</a>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">退出登录</a>
     </div>
 </div>

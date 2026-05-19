@@ -3,22 +3,25 @@
     <ul class="sidebar-menu">
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/index.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/index.jsp">
-                <span class="icon">🏠</span>
+                <span class="icon">⌂</span>
                 <span>工作台</span>
             </a>
         </li>
+        <!-- 后期改回：/user/list -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/userManage.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/userManage.jsp">
                 <span class="icon">👥</span>
                 <span>用户管理</span>
             </a>
         </li>
+        <!-- 后期改回：/template -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/templateConfig.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/templateConfig.jsp">
-                <span class="icon">📋</span>
+                <span class="icon">☷</span>
                 <span>采购模板配置</span>
             </a>
         </li>
+        <!-- 后期改回：/material/list -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/materialManage.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/materialManage.jsp">
                 <span class="icon">📦</span>
@@ -31,6 +34,7 @@
                 <span>采购记录</span>
             </a>
         </li>
+        <!-- 后期改回：/log/list -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/operateLog.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/operateLog.jsp">
                 <span class="icon">📝</span>
