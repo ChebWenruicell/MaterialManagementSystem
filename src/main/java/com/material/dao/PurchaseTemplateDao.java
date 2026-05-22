@@ -1,0 +1,53 @@
+package com.material.dao;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import com.material.bean.PurchaseTemplate;
+public class PurchaseTemplateDao {
+    public List<PurchaseTemplate> list() {
+        Connection conn = DBUtil.getConn();
+        List<PurchaseTemplate> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM purchase_template";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                PurchaseTemplate t = new PurchaseTemplate();
+                t.setId(rs.getInt("id"));
+                t.setTemplateName(rs.getString("template_name"));
+                t.setFieldList(rs.getString("field_list"));
+                t.setRequiredList(rs.getString("required_list"));
+                t.setStatus(rs.getInt("status"));
+                list.add(t);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return list;
+    }
+    public int add(PurchaseTemplate t) {
+        Connection conn = DBUtil.getConn();
+        int res = 0;
+        try {
+            String sql = "INSERT INTO purchase_template(template_name,field_list,required_list,status) VALUES(?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, t.getTemplateName());
+            pstmt.setString(2, t.getFieldList());
+            pstmt.setString(3, t.getRequiredList());
+            pstmt.setInt(4, t.getStatus());
+            res = pstmt.executeUpdate();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return res;
+    }
+}
