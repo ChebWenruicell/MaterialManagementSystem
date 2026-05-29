@@ -1,3 +1,4 @@
+
 package com.material.bean;
 import java.util.Date;
 public class Material {
