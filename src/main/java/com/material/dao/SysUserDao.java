@@ -1,4 +1,3 @@
-
 package com.material.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,6 +5,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import com.material.bean.SysUser;
+
 public class SysUserDao {
     public SysUser login(String username, String password) {
         Connection conn = DBUtil.getConn();
@@ -34,6 +34,8 @@ public class SysUserDao {
         }
         return user;
     }
+
+    // 已修复：添加了email赋值
     public List<SysUser> list() {
         Connection conn = DBUtil.getConn();
         List<SysUser> list = new ArrayList<>();
@@ -48,6 +50,7 @@ public class SysUserDao {
                 u.setRealName(rs.getString("real_name"));
                 u.setRole(rs.getString("role"));
                 u.setPhone(rs.getString("phone"));
+                u.setEmail(rs.getString("email"));
                 list.add(u);
             }
             rs.close();
@@ -59,6 +62,7 @@ public class SysUserDao {
         }
         return list;
     }
+
     public int add(SysUser u) {
         Connection conn = DBUtil.getConn();
         int res = 0;
@@ -80,6 +84,7 @@ public class SysUserDao {
         }
         return res;
     }
+
     public int delete(Integer id) {
         Connection conn = DBUtil.getConn();
         int res = 0;
@@ -95,5 +100,23 @@ public class SysUserDao {
             try { conn.close(); } catch (Exception e) {}
         }
         return res;
+    }
+    public int update(SysUser u){
+        Connection conn=DBUtil.getConn();
+        int r=0;
+        try{
+            String sql="update sys_user set username=?,real_name=?,role=?,phone=?,email=? where id=?";
+            PreparedStatement p=conn.prepareStatement(sql);
+            p.setString(1,u.getUsername());
+            p.setString(2,u.getRealName());
+            p.setString(3,u.getRole());
+            p.setString(4,u.getPhone());
+            p.setString(5,u.getEmail());
+            p.setInt(6,u.getId());
+            r=p.executeUpdate();
+            p.close();
+        }catch(Exception e){e.printStackTrace();}
+        finally{try{conn.close();}catch(Exception e){}}
+        return r;
     }
 }

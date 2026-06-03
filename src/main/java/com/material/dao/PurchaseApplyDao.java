@@ -55,4 +55,45 @@ public class PurchaseApplyDao {
             ps.setString(1,status); ps.setInt(2,id); ps.executeUpdate();
         }catch(Exception e){e.printStackTrace();}
     }
+    // 全部采购单统计
+    public int countAllApply(){
+        Connection conn = DBUtil.getConn();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int count = 0;
+        try {
+            String sql = "select count(id) from purchase_apply";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return count;
+    }
+
+    // 已审批采购单统计
+    public int countFinishApply(){
+        Connection conn = DBUtil.getConn();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int count = 0;
+        try {
+            String sql = "select count(id) from purchase_apply where audit_status='已审批'";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return count;
+    }
 }

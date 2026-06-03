@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
 <%@ include file="../common/header.jsp" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>用户管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <%@ include file="../common/sidebar_admin.jsp" %>
@@ -17,6 +18,11 @@
                 <h3 class="card-title">用户列表</h3>
                 <button class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">添加用户</button>
             </div>
+
+            <div style="padding:10px; background:#f8f9fa;">
+                检测到用户数量：${list.size()}
+            </div>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -29,7 +35,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach items="${userList}" var="user">
+                    <c:forEach items="${list}" var="user">
                         <tr>
                             <td>${user.username}</td>
                             <td>${user.realName}</td>
@@ -38,6 +44,8 @@
                             <td>${user.email}</td>
                             <td>
                                 <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">删除</button>
+                                <button class="btn btn-info btn-sm ml-1" data-toggle="modal" data-target="#editModal"
+                                onclick="fillData(${user.id},'${user.username}','${user.realName}','${user.role}','${user.phone}','${user.email}')">修改</button>
                             </td>
                         </tr>
                     </c:forEach>
@@ -45,7 +53,7 @@
             </table>
         </div>
         
-        <!-- 添加用户模态框 -->
+        <!-- 新增弹窗 -->
         <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -59,7 +67,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label class="form-label">账号</label>
-                                <input type="text" name="account" class="form-input" required>
+                                <input type="text" name="username" class="form-input" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">密码</label>
@@ -67,7 +75,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">姓名</label>
-                                <input type="text" name="name" class="form-input" required>
+                                <input type="text" name="realName" class="form-input" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">角色</label>
@@ -94,27 +102,71 @@
                 </div>
             </div>
         </div>
+
+        <!-- 修改弹窗 -->
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">编辑用户</h5>
+                        <button class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <form action="${pageContext.request.contextPath}/user/update" method="post">
+                        <input type="hidden" name="id" id="eid">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>账号</label>
+                                <input type="text" name="username" id="euser" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>姓名</label>
+                                <input type="text" name="realName" id="ereal" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>角色</label>
+                                <select name="role" id="erole" class="form-input" required>
+                                    <option value="采购人">采购人</option>
+                                    <option value="审批人">审批人</option>
+                                    <option value="admin">管理员</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>电话</label>
+                                <input type="text" name="phone" id="ephone" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>邮箱</label>
+                                <input type="email" name="email" id="eemail" class="form-input">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">保存修改</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     
     <script>
+        //删除
         function deleteUser(id) {
             if (confirm("确定要删除该用户吗？")) {
-                fetch('${pageContext.request.contextPath}/user/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({id: id})
-                }).then(res => res.json())
-                  .then(data => {
-                      alert(data.msg);
-                      location.reload();
-                  });
+                location.href="${pageContext.request.contextPath}/user/delete?id="+id;
             }
+        }
+        //回填修改数据
+        function fillData(id,un,rn,ro,ph,em){
+            document.getElementById("eid").value=id;
+            document.getElementById("euser").value=un;
+            document.getElementById("ereal").value=rn;
+            document.getElementById("erole").value=ro;
+            document.getElementById("ephone").value=ph;
+            document.getElementById("eemail").value=em;
         }
     </script>
 </body>

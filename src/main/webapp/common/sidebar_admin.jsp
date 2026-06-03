@@ -7,21 +7,21 @@
                 <span>工作台</span>
             </a>
         </li>
-        <!-- 后期改回：/user/list -->
+
+        <!-- ✅ 唯一正确修改：链接走Servlet查数据，active判断用你的真实页面路径！！ -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/userManage.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/admin/userManage.jsp">
+            <a href="${pageContext.request.contextPath}/user/list">
                 <span class="icon">👥</span>
                 <span>用户管理</span>
             </a>
         </li>
-        <!-- 后期改回：/template -->
+
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/templateConfig.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/templateConfig.jsp">
                 <span class="icon">☷</span>
                 <span>采购模板配置</span>
             </a>
         </li>
-        <!-- 后期改回：/material/list -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/materialManage.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/materialManage.jsp">
                 <span class="icon">📦</span>
@@ -34,7 +34,6 @@
                 <span>采购记录</span>
             </a>
         </li>
-        <!-- 后期改回：/log/list -->
         <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/operateLog.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/operateLog.jsp">
                 <span class="icon">📝</span>
