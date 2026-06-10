@@ -1,7 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!-- 对应Servlet地址：/template/list -->
 <%@ include file="../common/header.jsp" %>
-<%-- Tomcat11 专用 JSTL 标签 --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
@@ -24,9 +22,9 @@
                 <thead>
                     <tr>
                         <th>模板名称</th>
-                        <th>物资名称</th>
-                        <th>规格型号</th>
-                        <th>计量单位</th>
+                        <th>表单字段</th>
+                        <th>必填字段</th>
+                        <th>状态</th>
                         <th>创建时间</th>
                         <th>操作</th>
                     </tr>
@@ -35,11 +33,12 @@
                     <c:forEach items="${templateList}" var="template">
                         <tr>
                             <td>${template.templateName}</td>
-                            <td>${template.materialName}</td>
-                            <td>${template.spec}</td>
-                            <td>${template.unit}</td>
+                            <td>${template.fieldList}</td>
+                            <td>${template.requiredList}</td>
+                            <td>${template.status == 1 ? '启用' : '停用'}</td>
                             <td>${template.createTime}</td>
                             <td>
+                                <button class="btn btn-info btn-sm" onclick="openConfig(${template.id},'${template.templateName}','${template.fieldList}','${template.requiredList}',${template.status})">配置</button>
                                 <button class="btn btn-danger btn-sm" onclick="deleteTemplate(${template.id})">删除</button>
                             </td>
                         </tr>
@@ -58,28 +57,73 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="${pageContext.request.contextPath}/template" method="post">
+                    <form action="${pageContext.request.contextPath}/template/add" method="post">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label class="form-label">模板名称</label>
                                 <input type="text" name="templateName" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">物资名称</label>
-                                <input type="text" name="materialName" class="form-control" required>
+                                <label class="form-label">表单字段（逗号分隔）</label>
+                                <input type="text" name="fieldList" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">规格型号</label>
-                                <input type="text" name="spec" class="form-control" required>
+                                <label class="form-label">必填字段（逗号分隔）</label>
+                                <input type="text" name="requiredList" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">计量单位</label>
-                                <input type="text" name="unit" class="form-control" required>
+                                <label class="form-label">状态</label>
+                                <select name="status" class="form-control">
+                                    <option value="1">启用</option>
+                                    <option value="0">停用</option>
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
                             <button type="submit" class="btn btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配置模板弹窗 -->
+        <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">模板配置</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="${pageContext.request.contextPath}/template/update" method="post">
+                        <input type="hidden" name="id" id="configId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">模板名称</label>
+                                <input type="text" name="templateName" id="configName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">表单字段</label>
+                                <input type="text" name="fieldList" id="configField" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">必填字段</label>
+                                <input type="text" name="requiredList" id="configRequired" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">状态</label>
+                                <select name="status" id="configStatus" class="form-control">
+                                    <option value="1">启用</option>
+                                    <option value="0">停用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">保存配置</button>
                         </div>
                     </form>
                 </div>
@@ -91,9 +135,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        function openConfig(id, name, field, req, status) {
+            $("#configId").val(id);
+            $("#configName").val(name);
+            $("#configField").val(field);
+            $("#configRequired").val(req);
+            $("#configStatus").val(status);
+            $("#configModal").modal("show");
+        }
+
         function deleteTemplate(id) {
             if (confirm("确定要删除该模板吗？")) {
-                location.href="${pageContext.request.contextPath}/template?action=delete&id="+id;
+                location.href="${pageContext.request.contextPath}/template/delete?id="+id;
             }
         }
     </script>

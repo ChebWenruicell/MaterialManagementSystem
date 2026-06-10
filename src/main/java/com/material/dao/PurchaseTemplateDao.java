@@ -51,4 +51,43 @@ public class PurchaseTemplateDao {
         }
         return res;
     }
+    // 删除模板
+    public int delete(Integer id) {
+        Connection conn = DBUtil.getConn();
+        int res = 0;
+        try {
+            String sql = "DELETE FROM purchase_template WHERE id=?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            res = pstmt.executeUpdate();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return res;
+    }
+
+    // 修改模板
+    public int update(PurchaseTemplate t) {
+        Connection conn = DBUtil.getConn();
+        int res = 0;
+        try {
+            String sql = "UPDATE purchase_template SET template_name=?,field_list=?,required_list=?,status=? WHERE id=?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, t.getTemplateName());
+            pstmt.setString(2, t.getFieldList());
+            pstmt.setString(3, t.getRequiredList());
+            pstmt.setInt(4, t.getStatus());
+            pstmt.setInt(5, t.getId());
+            res = pstmt.executeUpdate();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return res;
+    }
 }

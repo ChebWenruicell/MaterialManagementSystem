@@ -135,7 +135,7 @@
     <div class="login-page">
         <!-- 左侧品牌区域 -->
         <div class="login-left">
-           
+            <div class="login-logo">物资采购管理系统</div>
             <div class="login-subtitle">物资采购管理智能体</div>
             
             <div class="login-features">
@@ -160,21 +160,24 @@
                 <h2 class="login-card-title">欢迎登录</h2>
                 <p class="login-card-subtitle">物资采购管理系统</p>
                 
+                <!-- ✅ 修正1：错误信息显示优化，加上Bootstrap的alert样式 -->
                 <% if (request.getAttribute("errorMsg") != null) { %>
-                    <div class="alert alert-danger" style="margin-bottom: 24px;">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-bottom: 24px;">
                         <%= request.getAttribute("errorMsg") %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <% } %>
                 
+                <!-- ✅ 修正2：表单action加上项目上下文路径，避免404 -->
                 <form action="${pageContext.request.contextPath}/login" method="post">
                     <div class="form-group">
                         <label class="form-label">用户名</label>
-                        <input type="text" name="username" class="form-input" placeholder="请输入用户名" required>
+                        <input type="text" name="username" class="form-control form-input" placeholder="请输入用户名" required>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">密码</label>
-                        <input type="password" name="password" class="form-input" placeholder="请输入密码" required>
+                        <input type="password" name="password" class="form-control form-input" placeholder="请输入密码" required>
                     </div>
                     
                     <button type="submit" class="btn btn-primary login-btn" style="width: 100%;">登录</button>
