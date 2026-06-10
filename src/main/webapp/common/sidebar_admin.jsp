@@ -1,40 +1,51 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String currentPage = (String) request.getAttribute("javax.servlet.forward.servlet_path");
+    if (currentPage == null) {
+        currentPage = request.getServletPath();
+    }
+    pageContext.setAttribute("currentPage", currentPage);
+%>
+
 <div class="sidebar">
     <ul class="sidebar-menu">
-        <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/index.jsp' ? 'active' : ''}">
+        <li class="sidebar-menu-item ${currentPage == '/admin/index.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/index.jsp">
                 <span class="icon">⌂</span>
                 <span>工作台</span>
             </a>
         </li>
 
-        <!-- ✅ 唯一正确修改：链接走Servlet查数据，active判断用你的真实页面路径！！ -->
-        <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/userManage.jsp' ? 'active' : ''}">
+        <li class="sidebar-menu-item ${currentPage == '/admin/userManage.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/user/list">
                 <span class="icon">👥</span>
                 <span>用户管理</span>
             </a>
         </li>
 
-        <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/templateConfig.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/admin/templateConfig.jsp">
+        <!-- ✅ 只改这里：让采购模板走 Servlet 查数据库 -->
+        <li class="sidebar-menu-item ${currentPage == '/admin/templateConfig.jsp' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/template/list">
                 <span class="icon">☷</span>
                 <span>采购模板配置</span>
             </a>
         </li>
-        <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/materialManage.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/admin/materialManage.jsp">
+
+        <li class="sidebar-menu-item ${currentPage == '/admin/materialManage.jsp' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/material/list">
                 <span class="icon">📦</span>
                 <span>物资管理</span>
             </a>
         </li>
-        <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/purchaseRecord.jsp' ? 'active' : ''}">
+
+        <li class="sidebar-menu-item ${currentPage == '/admin/purchaseRecord.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/purchaseRecord.jsp">
                 <span class="icon">📊</span>
                 <span>采购记录</span>
             </a>
         </li>
-        <li class="sidebar-menu-item ${pageContext.request.servletPath == '/admin/operateLog.jsp' ? 'active' : ''}">
+
+        <li class="sidebar-menu-item ${currentPage == '/admin/operateLog.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/admin/operateLog.jsp">
                 <span class="icon">📝</span>
                 <span>操作日志</span>

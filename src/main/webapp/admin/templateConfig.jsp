@@ -6,13 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <title>采购模板管理</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 </head>
 <body>
     <%@ include file="../common/sidebar_admin.jsp" %>
-    <div class="main-content">
+    <div class="main-content" style="padding:20px;">
         <h1 class="page-title">采购模板管理</h1>
-        
+
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">模板列表</h3>
@@ -30,25 +30,35 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach items="${templateList}" var="template">
-                        <tr>
-                            <td>${template.templateName}</td>
-                            <td>${template.fieldList}</td>
-                            <td>${template.requiredList}</td>
-                            <td>${template.status == 1 ? '启用' : '停用'}</td>
-                            <td>${template.createTime}</td>
-                            <td>
-                                <button class="btn btn-info btn-sm" onclick="openConfig(${template.id},'${template.templateName}','${template.fieldList}','${template.requiredList}',${template.status})">配置</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteTemplate(${template.id})">删除</button>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
+    <c:forEach items="${templateList}" var="template">
+        <tr>
+            <td>${template.templateName}</td>
+            <td>${template.fieldList.replace('[\"', '').replace('\"]', '').replace('\",\"', ',')}</td>
+            <td>${template.requiredList.replace('[\"', '').replace('\"]', '').replace('\",\"', ',')}</td>
+            <td>${template.status == 1 ? '启用' : '停用'}</td>
+            <!-- ✅ 补上创建时间的<td>，顺序和表头对应 -->
+            <td>${template.createTime}</td>
+            <!-- ✅ 操作按钮在最后一列 -->
+            <td>
+                <button class="btn btn-info btn-sm" 
+                        data-toggle="modal" 
+                        data-target="#configModal"
+                        data-id="${template.id}"
+                        data-name="${template.templateName}"
+                        data-field="${template.fieldList.replace('[\"', '').replace('\"]', '').replace('\",\"', ',')}"
+                        data-req="${template.requiredList.replace('[\"', '').replace('\"]', '').replace('\",\"', ',')}"
+                        data-status="${template.status}">配置</button>
+
+                <button class="btn btn-danger btn-sm" onclick="deleteTemplate(${template.id})">删除</button>
+            </td>
+        </tr>
+    </c:forEach>
+</tbody>
             </table>
         </div>
-        
+
         <!-- 添加模板模态框 -->
-        <div class="modal fade" id="addTemplateModal" tabindex="-1" role="dialog">
+        <div class="modal fade" id="addTemplateModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -60,19 +70,19 @@
                     <form action="${pageContext.request.contextPath}/template/add" method="post">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label class="form-label">模板名称</label>
+                                <label>模板名称</label>
                                 <input type="text" name="templateName" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">表单字段（逗号分隔）</label>
-                                <input type="text" name="fieldList" class="form-control" required>
+                                <label>表单字段（逗号分隔）</label>
+                                <input type="text" name="fieldList" class="form-control" required placeholder="例如：物资名称,规格,数量,用途">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">必填字段（逗号分隔）</label>
-                                <input type="text" name="requiredList" class="form-control" required>
+                                <label>必填字段（逗号分隔）</label>
+                                <input type="text" name="requiredList" class="form-control" required placeholder="例如：物资名称,数量">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">状态</label>
+                                <label>状态</label>
                                 <select name="status" class="form-control">
                                     <option value="1">启用</option>
                                     <option value="0">停用</option>
@@ -80,7 +90,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                             <button type="submit" class="btn btn-primary">保存</button>
                         </div>
                     </form>
@@ -89,7 +99,7 @@
         </div>
 
         <!-- 配置模板弹窗 -->
-        <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
+        <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -102,19 +112,19 @@
                         <input type="hidden" name="id" id="configId">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label class="form-label">模板名称</label>
+                                <label>模板名称</label>
                                 <input type="text" name="templateName" id="configName" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">表单字段</label>
+                                <label>表单字段</label>
                                 <input type="text" name="fieldList" id="configField" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">必填字段</label>
+                                <label>必填字段</label>
                                 <input type="text" name="requiredList" id="configRequired" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">状态</label>
+                                <label>状态</label>
                                 <select name="status" id="configStatus" class="form-control">
                                     <option value="1">启用</option>
                                     <option value="0">停用</option>
@@ -122,7 +132,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                             <button type="submit" class="btn btn-primary">保存配置</button>
                         </div>
                     </form>
@@ -130,19 +140,19 @@
             </div>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        function openConfig(id, name, field, req, status) {
-            $("#configId").val(id);
-            $("#configName").val(name);
-            $("#configField").val(field);
-            $("#configRequired").val(req);
-            $("#configStatus").val(status);
-            $("#configModal").modal("show");
-        }
+        $('#configModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            $('#configId').val(button.data('id'));
+            $('#configName').val(button.data('name'));
+            $('#configField').val(button.data('field'));
+            $('#configRequired').val(button.data('req'));
+            $('#configStatus').val(button.data('status'));
+        });
 
         function deleteTemplate(id) {
             if (confirm("确定要删除该模板吗？")) {

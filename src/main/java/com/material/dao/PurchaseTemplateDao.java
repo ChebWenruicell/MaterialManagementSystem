@@ -21,6 +21,7 @@ public class PurchaseTemplateDao {
                 t.setFieldList(rs.getString("field_list"));
                 t.setRequiredList(rs.getString("required_list"));
                 t.setStatus(rs.getInt("status"));
+                t.setCreateTime(rs.getTimestamp("create_time"));
                 list.add(t);
             }
             rs.close();
