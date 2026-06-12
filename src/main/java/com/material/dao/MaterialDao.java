@@ -96,4 +96,24 @@ public class MaterialDao {
         }
         return res;
     }
+
+    // ✅ 只加了这一个方法：查询物资种类总数
+    public int countAll() {
+        Connection conn = DBUtil.getConn();
+        try {
+            String sql = "SELECT COUNT(*) FROM material";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return 0;
+    }
 }

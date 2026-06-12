@@ -9,12 +9,12 @@
 
 <div class="sidebar">
     <ul class="sidebar-menu">
-        <li class="sidebar-menu-item ${currentPage == '/admin/index.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/admin/index.jsp">
-                <span class="icon">⌂</span>
-                <span>工作台</span>
-            </a>
-        </li>
+        <li class="sidebar-menu-item ${currentPage == '/admin/index' ? 'active' : ''}">
+    <a href="${pageContext.request.contextPath}/admin/index">
+        <span class="icon">⌂</span>
+        <span>工作台</span>
+    </a>
+</li>
 
         <li class="sidebar-menu-item ${currentPage == '/admin/userManage.jsp' ? 'active' : ''}">
             <a href="${pageContext.request.contextPath}/user/list">
@@ -38,18 +38,18 @@
             </a>
         </li>
 
-        <li class="sidebar-menu-item ${currentPage == '/admin/purchaseRecord.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/admin/purchaseRecord.jsp">
-                <span class="icon">📊</span>
-                <span>采购记录</span>
-            </a>
-        </li>
+       <li class="sidebar-menu-item ${currentPage == '/purchase/listAll' ? 'active' : ''}">
+    <a href="${pageContext.request.contextPath}/purchase/listAll">
+        <span class="icon">📊</span>
+        <span>采购记录</span>
+    </a>
+</li>
 
-        <li class="sidebar-menu-item ${currentPage == '/admin/operateLog.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/admin/operateLog.jsp">
-                <span class="icon">📝</span>
-                <span>操作日志</span>
-            </a>
-        </li>
+        <li class="sidebar-menu-item ${currentPage == '/log/list' ? 'active' : ''}">
+    <a href="${pageContext.request.contextPath}/log/list">
+        <span class="icon">📝</span>
+        <span>操作日志</span>
+    </a>
+</li>
     </ul>
 </div>

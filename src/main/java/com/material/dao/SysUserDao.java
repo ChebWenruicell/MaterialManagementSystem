@@ -154,4 +154,24 @@ public class SysUserDao {
         finally{try{conn.close();}catch(Exception e){}}
         return r;
     }
+
+    // ✅ 只加了这一个方法：查询系统用户总数
+    public int countAll() {
+        Connection conn = DBUtil.getConn();
+        try {
+            String sql = "SELECT COUNT(*) FROM sys_user";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return 0;
+    }
 }

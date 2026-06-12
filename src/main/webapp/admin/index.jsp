@@ -1,12 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="../common/header.jsp" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>管理员工作台</title>
     <style>
-       
         .stat-card {
             cursor: pointer;
             transition: all 0.2s;
@@ -15,6 +15,11 @@
             transform: translateY(-4px);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
+        .manage-btn {
+            float: right;
+            font-size: 14px;
+            padding: 4px 12px;
+        }
     </style>
 </head>
 <body>
@@ -22,101 +27,82 @@
     <div class="main-content">
         <h1 class="page-title">管理员工作台</h1>
         
-        <!-- 快捷操作区 -->
-        <div class="quick-actions">
-            <a href="${pageContext.request.contextPath}/admin/userManage.jsp" class="quick-action-btn">
-                <div class="quick-action-icon">👥</div>
-                <span>用户管理</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/templateConfig.jsp" class="quick-action-btn">
-                <div class="quick-action-icon">☷</div>
-                <span>模板配置</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/materialManage.jsp" class="quick-action-btn">
-                <div class="quick-action-icon">📦</div>
-                <span>物资管理</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/purchaseRecord.jsp" class="quick-action-btn">
-                <div class="quick-action-icon">📊</div>
-                <span>采购记录</span>
-            </a>
-        </div>
-        
-        <!-- 数据统计区（现在可点击跳转） -->
+        <!-- 数据统计区（已修正采购记录跳转路径） -->
         <div class="row">
             <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/admin/userManage.jsp'">
-                    <div class="stat-icon stat-icon-blue">👥</div>
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/user/list'">
+                    <div class="stat-icon stat-icon-purple">👥</div>
                     <div class="stat-number">${userCount}</div>
                     <div class="stat-label">系统用户总数</div>
                 </div>
             </div>
             <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/admin/materialManage.jsp'">
-                    <div class="stat-icon stat-icon-green">📦</div>
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/template/list'">
+                    <div class="stat-icon stat-icon-blue">☰</div>
                     <div class="stat-number">${materialCount}</div>
-                    <div class="stat-label">物资种类数量</div>
+                    <div class="stat-label">采购模板配置</div>
                 </div>
             </div>
             <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/admin/purchaseRecord.jsp'">
-                    <div class="stat-icon stat-icon-orange">📊</div>
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/material/list'">
+                    <div class="stat-icon stat-icon-brown">📦</div>
                     <div class="stat-number">${purchaseCount}</div>
-                    <div class="stat-label">采购单总数</div>
+                    <div class="stat-label">物资管理</div>
                 </div>
             </div>
+            <!-- ✅ 修正为你实际的采购记录地址 -->
             <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/admin/purchaseRecord.jsp'">
-                    <div class="stat-icon stat-icon-green">✅</div>
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/purchase/listAll'">
+                    <div class="stat-icon stat-icon-green">📊</div>
                     <div class="stat-number">${completedCount}</div>
-                    <div class="stat-label">已完成采购单</div>
+                    <div class="stat-label">采购记录</div>
                 </div>
             </div>
         </div>
         
         <div class="row">
-            <!-- 待办事项 -->
+            <!-- 待办事项（动态加载+管理入口） -->
             <div class="col-6">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">待办事项</h3>
+                        <a href="${pageContext.request.contextPath}/admin/todo" class="btn btn-sm btn-primary manage-btn">管理</a>
                     </div>
                     <div class="card-body">
-                        <div class="todo-item">
-                            <span>待维护物资信息：${materialCount}项</span>
-                            <span class="status-warning">待处理</span>
-                        </div>
-                        <div class="todo-item">
-                            <span>系统用户管理</span>
-                            <span class="status-warning">待处理</span>
-                        </div>
-                        <div class="todo-item">
-                            <span>采购模板更新</span>
-                            <span class="status-warning">待处理</span>
-                        </div>
+                        <c:forEach items="${todoList}" var="todo">
+                            <div class="todo-item">
+                                <span>${todo.content}</span>
+                                <span class="${todo.status == '已完成' ? 'status-success' : 'status-warning'}">${todo.status}</span>
+                            </div>
+                        </c:forEach>
+                        <c:if test="${empty todoList}">
+                            <div class="text-center text-muted" style="padding: 24px;">
+                                🎉 暂无待办事项
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </div>
             
-            <!-- 系统公告 -->
+            <!-- 系统公告（动态加载+管理入口） -->
             <div class="col-6">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">系统公告</h3>
+                        <a href="${pageContext.request.contextPath}/admin/notice" class="btn btn-sm btn-primary manage-btn">管理</a>
                     </div>
                     <div class="card-body">
-                        <div class="todo-item">
-                            <span>系统已升级至V2.0版本，新增AI生成采购单功能</span>
-                            <span class="status-success">已发布</span>
-                        </div>
-                        <div class="todo-item">
-                            <span>请各部门于本月底前完成物资盘点</span>
-                            <span class="status-warning">进行中</span>
-                        </div>
-                        <div class="todo-item">
-                            <span>系统将于每周日凌晨2点进行维护</span>
-                            <span class="status-success">已发布</span>
-                        </div>
+                        <c:forEach items="${noticeList}" var="notice">
+                            <div class="todo-item">
+                                <span>${notice.title}</span>
+                                <span class="${notice.status == '已发布' ? 'status-success' : 'status-warning'}">${notice.status}</span>
+                            </div>
+                        </c:forEach>
+                        <c:if test="${empty noticeList}">
+                            <div class="text-center text-muted" style="padding: 24px;">
+                                📢 暂无系统公告
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </div>

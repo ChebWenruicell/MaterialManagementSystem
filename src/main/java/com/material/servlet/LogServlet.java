@@ -1,4 +1,3 @@
-
 package com.material.servlet;
 import java.io.IOException;
 import java.util.List;
@@ -17,7 +16,8 @@ public class LogServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<OperateLog> list = logDao.list();
-        request.setAttribute("list", list);
-        request.getRequestDispatcher("/admin/logList.jsp").forward(request, response);
+        request.setAttribute("logList", list);
+        // ✅ 只改这一行：把 logList.jsp 改成 operateLog.jsp
+        request.getRequestDispatcher("/admin/operateLog.jsp").forward(request, response);
     }
 }

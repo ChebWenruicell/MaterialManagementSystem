@@ -76,14 +76,15 @@ public class PurchaseApplyDao {
         return count;
     }
 
-    // 已审批采购单统计
+ // 已审批采购单统计
     public int countFinishApply(){
         Connection conn = DBUtil.getConn();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         int count = 0;
         try {
-            String sql = "select count(id) from purchase_apply where audit_status='已审批'";
+            // 把 audit_status 改为 status
+            String sql = "select count(id) from purchase_apply where status='已审批'";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             if (rs.next()) count = rs.getInt(1);
@@ -95,5 +96,33 @@ public class PurchaseApplyDao {
             try { conn.close(); } catch (Exception e) {}
         }
         return count;
+    }// ✅ 新增：查询全部采购记录（给采购记录页面用）
+    public List<PurchaseApply> listAll() {
+        List<PurchaseApply> list = new ArrayList<>();
+        try (Connection c = DBUtil.getConn()) {
+            // 查询所有字段，按申请时间倒序
+            String sql = "select * from purchase_apply order by create_time desc";
+            PreparedStatement ps = c.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                PurchaseApply p = new PurchaseApply();
+                p.setId(rs.getInt("id"));
+                p.setPurchaseNo(rs.getString("purchase_no"));
+                p.setDept(rs.getString("dept"));
+                p.setItem(rs.getString("item"));
+                p.setSpec(rs.getString("spec"));
+                p.setNum(rs.getInt("num"));
+                p.setUsageDesc(rs.getString("usage_desc"));
+                p.setFilePath(rs.getString("file_path"));
+                p.setApplyUser(rs.getString("apply_user"));
+                p.setStatus(rs.getString("status"));
+                p.setCreateTime(rs.getTimestamp("create_time")); // 必须有，否则时间不显示
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
