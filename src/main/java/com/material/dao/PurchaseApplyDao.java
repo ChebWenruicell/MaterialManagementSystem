@@ -320,4 +320,50 @@ public class PurchaseApplyDao {
         }
         return list;
     }
+
+    // ========== 下面3个为采购人工作台新增统计方法 ==========
+    // 统计当前采购人全部采购单
+    public int countByUser(String username){
+        int count = 0;
+        try(Connection c=DBUtil.getConn()){
+            String sql="select count(id) from purchase_apply where apply_user=?";
+            PreparedStatement ps=c.prepareStatement(sql);
+            ps.setString(1,username);
+            ResultSet rs=ps.executeQuery();
+            if(rs.next()) count=rs.getInt(1);
+            rs.close();
+            ps.close();
+        }catch(Exception e){e.printStackTrace();}
+        return count;
+    }
+
+    // 统计当前采购人 待审核 单据数量
+    public int countWaitByUser(String username){
+        int count = 0;
+        try(Connection c=DBUtil.getConn()){
+            String sql="select count(id) from purchase_apply where apply_user=? and status='待审核'";
+            PreparedStatement ps=c.prepareStatement(sql);
+            ps.setString(1,username);
+            ResultSet rs=ps.executeQuery();
+            if(rs.next()) count=rs.getInt(1);
+            rs.close();
+            ps.close();
+        }catch(Exception e){e.printStackTrace();}
+        return count;
+    }
+
+    // 统计当前采购人 已通过(已完成)单据数量
+    public int countFinishByUser(String username){
+        int count = 0;
+        try(Connection c=DBUtil.getConn()){
+            String sql="select count(id) from purchase_apply where apply_user=? and status='已通过'";
+            PreparedStatement ps=c.prepareStatement(sql);
+            ps.setString(1,username);
+            ResultSet rs=ps.executeQuery();
+            if(rs.next()) count=rs.getInt(1);
+            rs.close();
+            ps.close();
+        }catch(Exception e){e.printStackTrace();}
+        return count;
+    }
 }

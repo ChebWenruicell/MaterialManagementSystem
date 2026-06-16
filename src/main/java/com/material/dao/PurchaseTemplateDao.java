@@ -32,6 +32,35 @@ public class PurchaseTemplateDao {
         }
         return list;
     }
+
+    // 【新增】给提交采购申请页面弹窗读取全部模板
+    public List<PurchaseTemplate> listAll() {
+        Connection conn = DBUtil.getConn();
+        List<PurchaseTemplate> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM purchase_template WHERE status = 1 ORDER BY create_time DESC";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                PurchaseTemplate t = new PurchaseTemplate();
+                t.setId(rs.getInt("id"));
+                t.setTemplateName(rs.getString("template_name"));
+                t.setFieldList(rs.getString("field_list"));
+                t.setRequiredList(rs.getString("required_list"));
+                t.setStatus(rs.getInt("status"));
+                t.setCreateTime(rs.getTimestamp("create_time"));
+                list.add(t);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return list;
+    }
+
     public int add(PurchaseTemplate t) {
         Connection conn = DBUtil.getConn();
         int res = 0;

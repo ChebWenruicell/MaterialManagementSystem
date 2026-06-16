@@ -3,6 +3,8 @@ package com.material.servlet;
 import com.material.bean.SysUser;
 import com.material.dao.TodoDao;
 import com.material.dao.NoticeDao;
+import com.material.dao.PurchaseApplyDao;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +18,8 @@ public class PurchaserIndexServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TodoDao todoDao = new TodoDao();
     private NoticeDao noticeDao = new NoticeDao();
+    // 新增采购单Dao
+    private PurchaseApplyDao purchaseDao = new PurchaseApplyDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -26,12 +30,23 @@ public class PurchaserIndexServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+        String username = user.getUsername();
 
-        // 查询当前角色的待办、公告数据，存入请求域
+        // 原有逻辑：待办、公告
         request.setAttribute("todoList", todoDao.listByRole("采购人"));
         request.setAttribute("noticeList", noticeDao.listAll());
 
-        // 转发到 JSP 页面渲染（JSP 依然在这里工作）
+        // 新增：查询当前采购人三类单据数量
+        int myPurchaseCount = purchaseDao.countByUser(username);
+        int pendingCount = purchaseDao.countWaitByUser(username);
+        int completedCount = purchaseDao.countFinishByUser(username);
+
+        // 传给页面EL表达式
+        request.setAttribute("myPurchaseCount", myPurchaseCount);
+        request.setAttribute("pendingCount", pendingCount);
+        request.setAttribute("completedCount", completedCount);
+
+        // 转发到 JSP 页面渲染
         request.getRequestDispatcher("/purchaser/index.jsp").forward(request, response);
     }
 
