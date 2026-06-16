@@ -14,8 +14,14 @@
         <h1 class="page-title">物资管理</h1>
         
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">物资列表</h3>
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <h3 class="card-title mb-0">物资列表</h3>
+                <!-- 新增：按物资名称搜索区域 -->
+                <form action="${pageContext.request.contextPath}/material/list" method="get" class="form-inline">
+                    <input type="text" name="keyword" class="form-control mr-2" placeholder="输入物资名称搜索" value="${keyword}">
+                    <button type="submit" class="btn btn-success">搜索</button>
+                    <a href="${pageContext.request.contextPath}/material/list" class="btn btn-outline-secondary ml-2">重置</a>
+                </form>
                 <button class="btn btn-primary" data-toggle="modal" data-target="#addMaterialModal">添加物资</button>
             </div>
             <table class="table table-striped table-hover">
@@ -51,6 +57,12 @@
                             </td>
                         </tr>
                     </c:forEach>
+                    <%-- 无搜索结果提示 --%>
+                    <c:if test="${empty list}">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">暂无匹配的物资数据</td>
+                        </tr>
+                    </c:if>
                 </tbody>
             </table>
         </div>

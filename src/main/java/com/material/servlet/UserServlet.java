@@ -31,10 +31,17 @@ public class UserServlet extends HttpServlet {
         SysUser loginUser = (SysUser) session.getAttribute("user");
         
         if ("/list".equals(path)) {
-            List<SysUser> list = userDao.list();
+            // 接收页面筛选参数
+            String keyword = request.getParameter("keyword");
+            String role = request.getParameter("role");
+            // 调用多条件筛选方法
+            List<SysUser> list = userDao.listByFilter(keyword, role);
             System.out.println("查询到的用户数量：" + list.size());
             
+            // 把筛选参数传回页面，输入框/下拉自动回填
             request.setAttribute("list", list);
+            request.setAttribute("keyword", keyword);
+            request.setAttribute("role", role);
             request.getRequestDispatcher("/admin/userManage.jsp").forward(request, response);
         } 
         else if ("/add".equals(path)) {
@@ -56,7 +63,6 @@ public class UserServlet extends HttpServlet {
             
             userDao.add(u);
 
-            // ✅ 只保留这一行正确的日志（空判断已加）
             String opName = loginUser==null ? "系统" : loginUser.getUsername();
             new OperateLogDao().add(new OperateLog(opName,"新增用户："+username));
             
@@ -66,7 +72,6 @@ public class UserServlet extends HttpServlet {
             Integer id = Integer.parseInt(request.getParameter("id"));
             userDao.delete(id);
             
-            // ✅ 修复空指针
             String opName = loginUser==null ? "系统" : loginUser.getUsername();
             new OperateLogDao().add(new OperateLog(opName, "删除用户ID：" + id));
             
@@ -88,7 +93,6 @@ public class UserServlet extends HttpServlet {
             su.setEmail(em);
             userDao.update(su);
 
-            // ✅ 新增修改日志（空判断）
             String opName = loginUser==null ? "系统" : loginUser.getUsername();
             new OperateLogDao().add(new OperateLog(opName, "修改用户ID：" + id));
             

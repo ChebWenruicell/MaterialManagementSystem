@@ -14,8 +14,38 @@ public class MaterialDao {
         Connection conn = DBUtil.getConn();
         List<Material> list = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM material";
+            String sql = "SELECT * FROM material ORDER BY create_time DESC";
             PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Material t = new Material();
+                t.setId(rs.getInt("id"));
+                t.setMaterialName(rs.getString("material_name"));
+                t.setSpec(rs.getString("spec"));
+                t.setPrice(rs.getDouble("price"));
+                t.setUnit(rs.getString("unit"));
+                t.setCreateTime(rs.getTimestamp("create_time"));
+                list.add(t);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { conn.close(); } catch (Exception e) {}
+        }
+        return list;
+    }
+
+    // 新增：按物资名称模糊搜索
+    public List<Material> searchByName(String keyword) {
+        Connection conn = DBUtil.getConn();
+        List<Material> list = new ArrayList<>();
+        try {
+            // 数据库字段 material_name 模糊匹配
+            String sql = "SELECT * FROM material WHERE material_name LIKE ? ORDER BY create_time DESC";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + keyword + "%");
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Material t = new Material();
@@ -57,7 +87,7 @@ public class MaterialDao {
         return res;
     }
 
-    // ================== 新增：修改 ==================
+    // 修改
     public int update(Material m) {
         Connection conn = DBUtil.getConn();
         int res = 0;
@@ -79,7 +109,7 @@ public class MaterialDao {
         return res;
     }
 
-    // ================== 新增：删除 ==================
+    // 删除
     public int delete(Integer id) {
         Connection conn = DBUtil.getConn();
         int res = 0;
@@ -97,7 +127,7 @@ public class MaterialDao {
         return res;
     }
 
-    // ✅ 只加了这一个方法：查询物资种类总数
+    // 查询物资总数
     public int countAll() {
         Connection conn = DBUtil.getConn();
         try {

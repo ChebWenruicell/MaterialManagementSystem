@@ -230,4 +230,52 @@ public class PurchaseApplyDao {
         }
         return p;
     }
+
+    // 多条件筛选采购记录：关键词(单号/物资名称)+状态（新增筛选方法）
+    public List<PurchaseApply> listByFilter(String keyword, String status) {
+        List<PurchaseApply> list = new ArrayList<>();
+        try (Connection c = DBUtil.getConn()) {
+            StringBuilder sql = new StringBuilder("SELECT * FROM purchase_apply WHERE 1=1 ");
+            List<Object> params = new ArrayList<>();
+
+            // 模糊匹配采购单号、物资名称
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (purchase_no LIKE ? OR item LIKE ?) ");
+                params.add("%" + keyword.trim() + "%");
+                params.add("%" + keyword.trim() + "%");
+            }
+            // 状态精准筛选
+            if (status != null && !status.trim().isEmpty()) {
+                sql.append(" AND status = ? ");
+                params.add(status.trim());
+            }
+            sql.append(" ORDER BY create_time DESC");
+
+            PreparedStatement ps = c.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                PurchaseApply p = new PurchaseApply();
+                p.setId(rs.getInt("id"));
+                p.setPurchaseNo(rs.getString("purchase_no"));
+                p.setDept(rs.getString("dept"));
+                p.setItem(rs.getString("item"));
+                p.setSpec(rs.getString("spec"));
+                p.setNum(rs.getInt("num"));
+                p.setUsageDesc(rs.getString("usage_desc"));
+                p.setFilePath(rs.getString("file_path"));
+                p.setApplyUser(rs.getString("apply_user"));
+                p.setStatus(rs.getString("status"));
+                p.setCreateTime(rs.getTimestamp("create_time"));
+                list.add(p);
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

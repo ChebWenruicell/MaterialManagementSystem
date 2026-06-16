@@ -16,27 +16,30 @@ import jakarta.servlet.http.HttpServletResponse;
 public class PurchaseServlet extends HttpServlet{
     PurchaseApplyDao dao=new PurchaseApplyDao();
 
-    // ✅ 只加这3行：解决405错误，让GET请求也能正常访问
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doPost(req, res);
     }
 
-    // ✅ 只给方法加了throws，你原来的代码一行没动
     protected void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException {
         try{
             req.setCharacterEncoding("utf8");
             String path=req.getPathInfo();
             SysUser user=(SysUser)req.getSession().getAttribute("user");
 
-            // ✅ 只加了这一个if分支：实现采购记录列表
             if(path.equals("/listAll")) {
-                List<PurchaseApply> purchaseList = dao.listAll();
+                // 接收页面筛选参数
+                String keyword = req.getParameter("keyword");
+                String status = req.getParameter("status");
+                // 多条件过滤查询
+                List<PurchaseApply> purchaseList = dao.listByFilter(keyword, status);
+                // 传给页面列表、回填筛选条件
                 req.setAttribute("purchaseList", purchaseList);
+                req.setAttribute("keyword", keyword);
+                req.setAttribute("status", status);
                 req.getRequestDispatcher("/admin/purchaseRecord.jsp").forward(req, res);
             }
 
-            // ✅ 你原来的/add代码，完全没动
             if(path.equals("/add")) {
                 PurchaseApply p=new PurchaseApply();
                 p.setPurchaseNo("CG"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));

@@ -13,11 +13,19 @@ import jakarta.servlet.http.HttpServletResponse;
 public class LogServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private OperateLogDao logDao = new OperateLogDao();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<OperateLog> list = logDao.list();
-        request.setAttribute("logList", list);
-        // ✅ 只改这一行：把 logList.jsp 改成 operateLog.jsp
+        // 接收页面两个筛选参数
+        String keyword = request.getParameter("keyword");
+        String logDate = request.getParameter("logDate");
+        // 调用多条件过滤方法
+        List<OperateLog> logList = logDao.listByFilter(keyword, logDate);
+
+        // 传给页面列表 + 回填筛选条件
+        request.setAttribute("logList", logList);
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("logDate", logDate);
         request.getRequestDispatcher("/admin/operateLog.jsp").forward(request, response);
     }
 }

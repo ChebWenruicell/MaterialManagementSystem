@@ -1,12 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
 <%@ include file="../common/header.jsp" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>用户管理</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <%@ include file="../common/sidebar_admin.jsp" %>
@@ -14,8 +14,20 @@
         <h1 class="page-title">用户管理</h1>
         
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">用户列表</h3>
+            <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <h3 class="card-title mb-0">用户列表</h3>
+                <!-- 筛选表单 -->
+                <form action="${pageContext.request.contextPath}/user/list" method="get" class="form-inline">
+                    <input type="text" class="form-control mr-2" name="keyword" placeholder="账号/姓名搜索" value="${keyword}">
+                    <select name="role" class="form-control mr-2">
+                        <option value="">全部角色</option>
+                        <option value="admin" ${role=='admin'?'selected':''}>管理员</option>
+                        <option value="采购人" ${role=='采购人'?'selected':''}>采购人</option>
+                        <option value="审批人" ${role=='审批人'?'selected':''}>审批人</option>
+                    </select>
+                    <button class="btn btn-success mr-2" type="submit">筛选</button>
+                    <a href="${pageContext.request.contextPath}/user/list" class="btn btn-outline-secondary">重置</a>
+                </form>
                 <button class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">添加用户</button>
             </div>
 
@@ -23,7 +35,7 @@
                 检测到用户数量：${list.size()}
             </div>
 
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>账号</th>
@@ -49,6 +61,11 @@
                             </td>
                         </tr>
                     </c:forEach>
+                    <c:if test="${empty list}">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">暂无匹配用户数据</td>
+                        </tr>
+                    </c:if>
                 </tbody>
             </table>
         </div>
@@ -67,19 +84,19 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label class="form-label">账号</label>
-                                <input type="text" name="username" class="form-input" required>
+                                <input type="text" name="username" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">密码</label>
-                                <input type="password" name="password" class="form-input" required>
+                                <input type="password" name="password" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">姓名</label>
-                                <input type="text" name="realName" class="form-input" required>
+                                <input type="text" name="realName" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">角色</label>
-                                <select name="role" class="form-input" required>
+                                <select name="role" class="form-control" required>
                                     <option value="采购人">采购人</option>
                                     <option value="审批人">审批人</option>
                                     <option value="admin">管理员</option>
@@ -87,15 +104,15 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">电话</label>
-                                <input type="text" name="phone" class="form-input" required>
+                                <input type="text" name="phone" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">邮箱</label>
-                                <input type="email" name="email" class="form-input">
+                                <input type="email" name="email" class="form-control">
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
                             <button type="submit" class="btn btn-primary">保存</button>
                         </div>
                     </form>
@@ -116,15 +133,15 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>账号</label>
-                                <input type="text" name="username" id="euser" class="form-input" required>
+                                <input type="text" name="username" id="euser" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>姓名</label>
-                                <input type="text" name="realName" id="ereal" class="form-input" required>
+                                <input type="text" name="realName" id="ereal" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>角色</label>
-                                <select name="role" id="erole" class="form-input" required>
+                                <select name="role" id="erole" class="form-control" required>
                                     <option value="采购人">采购人</option>
                                     <option value="审批人">审批人</option>
                                     <option value="admin">管理员</option>
@@ -132,15 +149,15 @@
                             </div>
                             <div class="form-group">
                                 <label>电话</label>
-                                <input type="text" name="phone" id="ephone" class="form-input" required>
+                                <input type="text" name="phone" id="ephone" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>邮箱</label>
-                                <input type="email" name="email" id="eemail" class="form-input">
+                                <input type="email" name="email" id="eemail" class="form-control">
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-outline" data-dismiss="modal">取消</button>
+                            <button class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
                             <button type="submit" class="btn btn-primary">保存修改</button>
                         </div>
                     </form>

@@ -32,11 +32,22 @@ public class MaterialServlet extends HttpServlet {
         String path = request.getPathInfo();
         HttpSession session = request.getSession();
         SysUser loginUser = (SysUser) session.getAttribute("user");
-        String opUser = (loginUser != null) ? loginUser.getUsername() : "系统"; // 统一在这里处理空
+        String opUser = (loginUser != null) ? loginUser.getUsername() : "系统";
 
         if ("/list".equals(path)) {
-            List<Material> list = materialDao.list();
+            // 接收搜索关键词
+            String keyword = request.getParameter("keyword");
+            List<Material> list;
+            if (keyword == null || keyword.trim().isEmpty()) {
+                // 无关键词 查询全部
+                list = materialDao.list();
+            } else {
+                // 按物资名称模糊搜索
+                list = materialDao.searchByName(keyword.trim());
+            }
             request.setAttribute("list", list);
+            // 把关键词传到页面，搜索框回填
+            request.setAttribute("keyword", keyword);
             request.getRequestDispatcher("/admin/materialManage.jsp").forward(request, response);
         } else if ("/add".equals(path)) {
             String name = request.getParameter("materialName");

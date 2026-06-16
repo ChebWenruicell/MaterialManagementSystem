@@ -6,10 +6,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import com.material.bean.SysUser;
-import java.security.MessageDigest; // 新增：MD5加密需要的包
+import java.security.MessageDigest;
 
 public class SysUserDao {
-    // ✅ 新增：MD5加密方法（匹配数据库里的加密密码）
     private String md5(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -31,13 +30,11 @@ public class SysUserDao {
         Connection conn = DBUtil.getConn();
         SysUser user = null;
         try {
-            // ✅ 对输入的密码进行MD5加密，再和数据库对比
             String encryptedPassword = md5(password);
-            
             String sql = "SELECT * FROM sys_user WHERE username=? AND password=?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
-            pstmt.setString(2, encryptedPassword); // ✅ 用加密后的密码查询
+            pstmt.setString(2, encryptedPassword);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 user = new SysUser();
@@ -58,7 +55,6 @@ public class SysUserDao {
         return user;
     }
 
-    // 下面的list()、add()、delete()、update()方法都不用改！
     public List<SysUser> list() {
         Connection conn = DBUtil.getConn();
         List<SysUser> list = new ArrayList<>();
@@ -90,11 +86,10 @@ public class SysUserDao {
         Connection conn = DBUtil.getConn();
         int res = 0;
         try {
-            // ✅ 新增用户时也自动加密密码
             String sql = "INSERT INTO sys_user(username,password,real_name,role,phone,email) VALUES(?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, u.getUsername());
-            pstmt.setString(2, md5(u.getPassword())); // ✅ 加密后再存入数据库
+            pstmt.setString(2, md5(u.getPassword()));
             pstmt.setString(3, u.getRealName());
             pstmt.setString(4, u.getRole());
             pstmt.setString(5, u.getPhone());
@@ -130,7 +125,6 @@ public class SysUserDao {
         Connection conn=DBUtil.getConn();
         int r=0;
         try{
-            // ✅ 修改用户时，如果密码不为空就加密，为空则不修改密码
             String sql;
             if (u.getPassword() != null && !u.getPassword().isEmpty()) {
                 sql = "update sys_user set username=?,password=?,real_name=?,role=?,phone=?,email=? where id=?";
@@ -155,7 +149,6 @@ public class SysUserDao {
         return r;
     }
 
-    // ✅ 只加了这一个方法：查询系统用户总数
     public int countAll() {
         Connection conn = DBUtil.getConn();
         try {
@@ -173,5 +166,48 @@ public class SysUserDao {
             try { conn.close(); } catch (Exception e) {}
         }
         return 0;
+    }
+
+    // 新增：账号/姓名模糊 + 角色多条件筛选用户
+    public List<SysUser> listByFilter(String keyword, String role) {
+        List<SysUser> list = new ArrayList<>();
+        try(Connection c=DBUtil.getConn()){
+            StringBuilder sql = new StringBuilder("select * from sys_user where 1=1 ");
+            List<Object> params = new ArrayList<>();
+
+            // 模糊匹配账号、真实姓名
+            if(keyword != null && !keyword.trim().isEmpty()){
+                sql.append(" and (username like ? or real_name like ?) ");
+                params.add("%"+keyword.trim()+"%");
+                params.add("%"+keyword.trim()+"%");
+            }
+            // 角色精准筛选
+            if(role != null && !role.trim().isEmpty()){
+                sql.append(" and role = ? ");
+                params.add(role.trim());
+            }
+            sql.append(" order by id desc");
+
+            PreparedStatement ps = c.prepareStatement(sql.toString());
+            for(int i=0;i<params.size();i++){
+                ps.setObject(i+1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                SysUser u = new SysUser();
+                u.setId(rs.getInt("id"));
+                u.setUsername(rs.getString("username"));
+                u.setRealName(rs.getString("real_name"));
+                u.setRole(rs.getString("role"));
+                u.setPhone(rs.getString("phone"));
+                u.setEmail(rs.getString("email"));
+                list.add(u);
+            }
+            rs.close();
+            ps.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return list;
     }
 }
