@@ -37,25 +37,28 @@ public class LoginServlet extends HttpServlet {
             // 4. 记录操作日志
             logDao.add(new OperateLog(user.getUsername(), "登录系统"));
 
-            // 5. ✅ 修正跳转路径+补全审批人角色
+            // 5. 按角色跳转（已全部改为走Servlet控制器，登录即加载数据）
             String role = user.getRole();
             String contextPath = request.getContextPath(); // 获取项目上下文路径，避免404
             switch (role) {
                 case "admin":
-                    response.sendRedirect(contextPath + "/admin/index.jsp");
+                    // 改为走管理员工作台Servlet，先查数据再渲染页面
+                    response.sendRedirect(contextPath + "/admin/index");
                     break;
                 case "采购人":
-                    response.sendRedirect(contextPath + "/purchaser/index.jsp"); // ✅ 修正路径
+                    // 改为走采购人工作台Servlet
+                    response.sendRedirect(contextPath + "/purchaser/index");
                     break;
                 case "审批人":
-                    response.sendRedirect(contextPath + "/approver/index.jsp"); // ✅ 补全审批人
+                    // 改为走审批人工作台Servlet
+                    response.sendRedirect(contextPath + "/approver/index");
                     break;
                 default:
                     request.setAttribute("errorMsg", "用户身份异常");
                     request.getRequestDispatcher("/login.jsp").forward(request, response);
             }
         } else {
-            // 6. ✅ 登录失败，跳回登录页并显示错误信息（和你login.jsp里的errorMsg对应）
+            // 6. 登录失败，跳回登录页并显示错误信息
             request.setAttribute("errorMsg", "用户名或密码错误");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }

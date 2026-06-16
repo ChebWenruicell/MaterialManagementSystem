@@ -1,28 +1,34 @@
 package com.material.dao;
 
+import com.material.bean.Todo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import com.material.bean.Todo;
 
 public class TodoDao {
-    // 根据角色查询待办事项（只查待处理的）
+
+    // 根据角色查询待处理待办（首页使用）
     public List<Todo> listByRole(String role) {
         List<Todo> list = new ArrayList<>();
-        try (Connection c = DBUtil.getConn()) {
-            String sql = "SELECT * FROM todo WHERE (role=? OR role='all') AND status='待处理' ORDER BY create_time DESC";
-            PreparedStatement ps = c.prepareStatement(sql);
+        String sql = "SELECT * FROM todo WHERE (role = ? OR role = 'all') AND status = '待处理' ORDER BY create_time DESC";
+        
+        try (Connection conn = DBUtil.getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, role);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Todo t = new Todo();
-                t.setId(rs.getInt("id"));
-                t.setContent(rs.getString("content"));
-                t.setRole(rs.getString("role"));
-                t.setStatus(rs.getString("status"));
-                list.add(t);
+            // ResultSet 放入 try-with-resources，使用后自动关闭
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Todo todo = new Todo();
+                    todo.setId(rs.getInt("id"));
+                    todo.setContent(rs.getString("content"));
+                    todo.setRole(rs.getString("role"));
+                    todo.setStatus(rs.getString("status"));
+                    todo.setCreateTime(rs.getString("create_time"));
+                    list.add(todo);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,13 +36,40 @@ public class TodoDao {
         return list;
     }
 
-    // ✅ 新增：添加待办事项
-    public int add(Todo t) {
-        try (Connection c = DBUtil.getConn()) {
-            String sql = "INSERT INTO todo(content, role) VALUES(?,?)";
-            PreparedStatement ps = c.prepareStatement(sql);
-            ps.setString(1, t.getContent());
-            ps.setString(2, t.getRole());
+    // 查询全部待办（管理页使用）
+    public List<Todo> listAll() {
+        List<Todo> list = new ArrayList<>();
+        String sql = "SELECT * FROM todo ORDER BY create_time DESC";
+        
+        try (Connection conn = DBUtil.getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Todo todo = new Todo();
+                todo.setId(rs.getInt("id"));
+                todo.setContent(rs.getString("content"));
+                todo.setRole(rs.getString("role"));
+                todo.setStatus(rs.getString("status"));
+                todo.setCreateTime(rs.getString("create_time"));
+                list.add(todo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // 新增待办
+    public int add(Todo todo) {
+        String sql = "INSERT INTO todo(content, role, status, create_time) VALUES(?,?,?,NOW())";
+        
+        try (Connection conn = DBUtil.getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, todo.getContent());
+            ps.setString(2, todo.getRole());
+            ps.setString(3, "待处理");
             return ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,11 +77,13 @@ public class TodoDao {
         }
     }
 
-    // ✅ 新增：标记待办为已完成
+    // 标记为已完成
     public int complete(int id) {
-        try (Connection c = DBUtil.getConn()) {
-            String sql = "UPDATE todo SET status='已完成' WHERE id=?";
-            PreparedStatement ps = c.prepareStatement(sql);
+        String sql = "UPDATE todo SET status = '已完成' WHERE id = ?";
+        
+        try (Connection conn = DBUtil.getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, id);
             return ps.executeUpdate();
         } catch (Exception e) {
@@ -57,11 +92,13 @@ public class TodoDao {
         }
     }
 
-    // ✅ 新增：删除待办事项
+    // 删除待办
     public int delete(int id) {
-        try (Connection c = DBUtil.getConn()) {
-            String sql = "DELETE FROM todo WHERE id=?";
-            PreparedStatement ps = c.prepareStatement(sql);
+        String sql = "DELETE FROM todo WHERE id = ?";
+        
+        try (Connection conn = DBUtil.getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, id);
             return ps.executeUpdate();
         } catch (Exception e) {
