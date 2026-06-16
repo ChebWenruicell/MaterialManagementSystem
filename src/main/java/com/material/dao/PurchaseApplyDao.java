@@ -278,4 +278,46 @@ public class PurchaseApplyDao {
         }
         return list;
     }
+
+    // 新增：待审核单据 按采购单号/物资名称模糊筛选（审批人待审核页面专用）
+    public List<PurchaseApply> listWaitByKeyword(String keyword) {
+        List<PurchaseApply> list = new ArrayList<>();
+        try (Connection c = DBUtil.getConn()) {
+            StringBuilder sql = new StringBuilder("SELECT * FROM purchase_apply WHERE status='待审核' ");
+            List<Object> params = new ArrayList<>();
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (purchase_no LIKE ? OR item LIKE ?) ");
+                params.add("%" + keyword.trim() + "%");
+                params.add("%" + keyword.trim() + "%");
+            }
+            sql.append(" ORDER BY create_time DESC");
+
+            PreparedStatement ps = c.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                PurchaseApply p = new PurchaseApply();
+                p.setId(rs.getInt("id"));
+                p.setPurchaseNo(rs.getString("purchase_no"));
+                p.setDept(rs.getString("dept"));
+                p.setItem(rs.getString("item"));
+                p.setSpec(rs.getString("spec"));
+                p.setNum(rs.getInt("num"));
+                p.setUsageDesc(rs.getString("usage_desc"));
+                p.setFilePath(rs.getString("file_path"));
+                p.setApplyUser(rs.getString("apply_user"));
+                p.setStatus(rs.getString("status"));
+                p.setCreateTime(rs.getTimestamp("create_time"));
+                list.add(p);
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

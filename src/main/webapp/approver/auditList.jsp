@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="../common/header.jsp" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +13,16 @@
     <div class="main-content">
         <h1 class="page-title">待审核采购单</h1>
         <div class="card">
-            <table class="table">
+            <!-- 筛选栏 -->
+            <div class="card-header d-flex align-items-center gap-3 flex-wrap">
+                <h4 class="mb-0">待审核列表</h4>
+                <form action="${pageContext.request.contextPath}/approver/auditList" method="get" class="form-inline">
+                    <input type="text" class="form-control mr-2" name="keyword" placeholder="采购单号/物资名称" value="${keyword}">
+                    <button class="btn btn-success" type="submit">筛选</button>
+                    <a href="${pageContext.request.contextPath}/approver/auditList" class="btn btn-outline-secondary ml-2">重置</a>
+                </form>
+            </div>
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>采购单号</th>

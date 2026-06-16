@@ -21,15 +21,20 @@ public class AuditListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         SysUser user = (SysUser) session.getAttribute("user");
-        // 登录+审批人权限校验
+        // 登录+审批人权限校验 完全保留
         if(user == null || !"审批人".equals(user.getRole())){
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
-        // 查询全部待审核单据
-        List<PurchaseApply> pendingList = purchaseDao.listWait();
+
+        // 新增：接收页面搜索关键词
+        String keyword = request.getParameter("keyword");
+        // 替换原listWait()，调用带筛选的方法
+        List<PurchaseApply> pendingList = purchaseDao.listWaitByKeyword(keyword);
+
         request.setAttribute("pendingList", pendingList);
-        // 转发到 auditList.jsp
+        // 把关键词传回页面，搜索框自动回填
+        request.setAttribute("keyword", keyword);
         request.getRequestDispatcher("/approver/auditList.jsp").forward(request, response);
     }
 

@@ -1,5 +1,6 @@
 package com.material.dao;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -62,6 +63,64 @@ public class AuditRecordDao {
                 ar.setAuditUser(rs.getString("audit_user"));
                 Timestamp ts = rs.getTimestamp("audit_time");
                 if(ts != null){
+                    ar.setAuditTime(new java.util.Date(ts.getTime()));
+                }
+                list.add(ar);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { if(rs != null) rs.close(); } catch (Exception e) {}
+            try { if(pstmt != null) pstmt.close(); } catch (Exception e) {}
+            try { if(conn != null) conn.close(); } catch (Exception e) {}
+        }
+        return list;
+    }
+
+    // 新增多条件筛选：审批人 + 采购单号模糊 + 审批结果 + 审批日期
+    public List<AuditRecord> listByFilter(String approver, String keyword, String auditResult, String auditDate) {
+        List<AuditRecord> list = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConn();
+            StringBuilder sql = new StringBuilder("SELECT * FROM audit_record WHERE audit_user = ? ");
+            List<Object> params = new ArrayList<>();
+            params.add(approver);
+
+            // 采购单号模糊匹配
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND purchase_no LIKE ? ");
+                params.add("%" + keyword.trim() + "%");
+            }
+            // 审批结果筛选：通过/驳回
+            if (auditResult != null && !auditResult.trim().isEmpty()) {
+                sql.append(" AND audit_result = ? ");
+                params.add(auditResult.trim());
+            }
+            // 按审批日期筛选当天记录
+            if (auditDate != null && !auditDate.trim().isEmpty()) {
+                sql.append(" AND DATE(audit_time) = ? ");
+                params.add(Date.valueOf(auditDate));
+            }
+            sql.append(" ORDER BY audit_time DESC");
+
+            pstmt = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                pstmt.setObject(i + 1, params.get(i));
+            }
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                AuditRecord ar = new AuditRecord();
+                ar.setId(rs.getInt("id"));
+                ar.setPurchaseId(rs.getInt("purchase_id"));
+                ar.setPurchaseNo(rs.getString("purchase_no"));
+                ar.setAuditResult(rs.getString("audit_result"));
+                ar.setAuditReason(rs.getString("audit_reason"));
+                ar.setAuditUser(rs.getString("audit_user"));
+                Timestamp ts = rs.getTimestamp("audit_time");
+                if (ts != null) {
                     ar.setAuditTime(new java.util.Date(ts.getTime()));
                 }
                 list.add(ar);
