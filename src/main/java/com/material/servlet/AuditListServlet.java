@@ -1,9 +1,7 @@
 package com.material.servlet;
 
-import com.material.bean.SysUser;
 import com.material.bean.PurchaseApply;
-import com.material.dao.TodoDao;
-import com.material.dao.NoticeDao;
+import com.material.bean.SysUser;
 import com.material.dao.PurchaseApplyDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,40 +12,25 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/approver/index")
-public class ApproverIndexServlet extends HttpServlet {
+@WebServlet("/approver/auditList")
+public class AuditListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private TodoDao todoDao = new TodoDao();
-    private NoticeDao noticeDao = new NoticeDao();
-    // 新增采购单Dao
     private PurchaseApplyDao purchaseDao = new PurchaseApplyDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         SysUser user = (SysUser) session.getAttribute("user");
-        // 原有身份校验不动
-        if (user == null || !"审批人".equals(user.getRole())) {
+        // 登录+审批人权限校验
+        if(user == null || !"审批人".equals(user.getRole())){
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
-
-        // 原有待办、公告保留
-        request.setAttribute("todoList", todoDao.listByRole("审批人"));
-        request.setAttribute("noticeList", noticeDao.listAll());
-
-        // 新增：审批工作台采购单统计数据
-        int pendingCount = purchaseDao.countWaitApply();
-        int approvedCount = purchaseDao.countFinishApply();
-        int rejectedCount = purchaseDao.countRejectApply();
+        // 查询全部待审核单据
         List<PurchaseApply> pendingList = purchaseDao.listWait();
-
-        request.setAttribute("pendingCount", pendingCount);
-        request.setAttribute("approvedCount", approvedCount);
-        request.setAttribute("rejectedCount", rejectedCount);
         request.setAttribute("pendingList", pendingList);
-
-        request.getRequestDispatcher("/approver/index.jsp").forward(request, response);
+        // 转发到 auditList.jsp
+        request.getRequestDispatcher("/approver/auditList.jsp").forward(request, response);
     }
 
     @Override

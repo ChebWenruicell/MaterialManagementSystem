@@ -29,36 +29,35 @@
         
         <!-- 数据统计区（已修正采购记录跳转路径） -->
         <div class="row">
-            <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/user/list'">
-                    <div class="stat-icon stat-icon-purple">👥</div>
-                    <div class="stat-number">${userCount}</div>
-                    <div class="stat-label">系统用户总数</div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/template/list'">
-                    <div class="stat-icon stat-icon-blue">☰</div>
-                    <div class="stat-number">${materialCount}</div>
-                    <div class="stat-label">采购模板配置</div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/material/list'">
-                    <div class="stat-icon stat-icon-brown">📦</div>
-                    <div class="stat-number">${purchaseCount}</div>
-                    <div class="stat-label">物资管理</div>
-                </div>
-            </div>
-            <!-- ✅ 修正为你实际的采购记录地址 -->
-            <div class="col-3">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/purchase/listAll'">
-                    <div class="stat-icon stat-icon-green">📊</div>
-                    <div class="stat-number">${completedCount}</div>
-                    <div class="stat-label">采购记录</div>
-                </div>
-            </div>
+    <div class="col-3">
+        <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/user/list'">
+            <div class="stat-icon stat-icon-purple">👥</div>
+            <div class="stat-number">${userCount}</div>
+            <div class="stat-label">系统用户总数</div>
         </div>
+    </div>
+    <div class="col-3">
+        <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/template/list'">
+            <div class="stat-icon stat-icon-blue">☰</div>
+            <div class="stat-number">${templateCount}</div>
+            <div class="stat-label">采购模板配置</div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/material/list'">
+            <div class="stat-icon stat-icon-brown">📦</div>
+            <div class="stat-number">${materialCount}</div>
+            <div class="stat-label">物资管理</div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/purchase/listAll'">
+            <div class="stat-icon stat-icon-green">📊</div>
+            <div class="stat-number">${purchaseCount}</div>
+            <div class="stat-label">采购记录</div>
+        </div>
+    </div>
+</div>
         
         <div class="row">
             <!-- 待办事项（动态加载+管理入口） -->

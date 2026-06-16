@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!-- 对应Servlet地址：/audit/list -->
 <%@ include file="../common/header.jsp" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
@@ -12,7 +11,6 @@
     <%@ include file="../common/sidebar_approver.jsp" %>
     <div class="main-content">
         <h1 class="page-title">待审核采购单</h1>
-        
         <div class="card">
             <table class="table">
                 <thead>
@@ -32,7 +30,7 @@
                             <td>${purchase.applyUser}</td>
                             <td>${purchase.createTime}</td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/approver/auditDetail.jsp?purchaseId=${purchase.id}" class="btn btn-primary btn-sm">审核</a>
+                                <a href="${pageContext.request.contextPath}/approver/auditDetail?purchaseId=${purchase.id}" class="btn btn-primary btn-sm">审核</a>
                             </td>
                         </tr>
                     </c:forEach>

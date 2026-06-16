@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!-- 对应Servlet地址：/approver/index -->
 <%@ include file="../common/header.jsp" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,11 +26,11 @@
         
         <!-- 快捷操作区 -->
         <div class="quick-actions" style="grid-template-columns: repeat(3, 1fr);">
-            <a href="${pageContext.request.contextPath}/approver/auditList.jsp" class="quick-action-btn">
+            <a href="${pageContext.request.contextPath}/approver/auditList" class="quick-action-btn">
                 <div class="quick-action-icon">✓</div>
                 <span>待审核采购单</span>
             </a>
-            <a href="${pageContext.request.contextPath}/approver/auditRecord.jsp" class="quick-action-btn">
+            <a href="${pageContext.request.contextPath}/approver/auditRecord" class="quick-action-btn">
                 <div class="quick-action-icon">☰</div>
                 <span>我的审批记录</span>
             </a>
@@ -42,21 +43,21 @@
         <!-- 数据统计区（现在可点击跳转） -->
         <div class="row">
             <div class="col-4">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/approver/auditList.jsp'">
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/approver/auditList'">
                     <div class="stat-icon stat-icon-orange">⏳</div>
                     <div class="stat-number">${pendingCount}</div>
                     <div class="stat-label">待审核采购单</div>
                 </div>
             </div>
             <div class="col-4">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/approver/auditRecord.jsp'">
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/approver/auditRecord'">
                     <div class="stat-icon stat-icon-green">✅</div>
                     <div class="stat-number">${approvedCount}</div>
                     <div class="stat-label">已通过</div>
                 </div>
             </div>
             <div class="col-4">
-                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/approver/auditRecord.jsp'">
+                <div class="stat-card" onclick="location.href='${pageContext.request.contextPath}/approver/auditRecord'">
                     <div class="stat-icon stat-icon-red">❌</div>
                     <div class="stat-number">${rejectedCount}</div>
                     <div class="stat-label">已驳回</div>
@@ -67,7 +68,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">待审核列表（最近5条）</h3>
-                <a href="${pageContext.request.contextPath}/approver/auditList.jsp" class="btn btn-primary btn-sm">立即审核</a>
+                <a href="${pageContext.request.contextPath}/approver/auditList" class="btn btn-primary btn-sm">立即审核</a>
             </div>
             <table class="table">
                 <thead>
@@ -87,7 +88,7 @@
                             <td>${purchase.applyUser}</td>
                             <td>${purchase.createTime}</td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/approver/auditDetail.jsp?purchaseId=${purchase.id}" class="btn btn-primary btn-sm">审核</a>
+                                <a href="${pageContext.request.contextPath}/approver/auditDetail?purchaseId=${purchase.id}" class="btn btn-primary btn-sm">审核</a>
                             </td>
                         </tr>
                     </c:forEach>

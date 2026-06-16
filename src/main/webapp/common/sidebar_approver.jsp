@@ -18,17 +18,17 @@
             </a>
         </li>
 
-        <!-- 待审核采购单：暂保留JSP路径，补完Servlet后替换为 /approver/auditList -->
-        <li class="sidebar-menu-item ${currentPage == '/approver/auditList.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/approver/auditList.jsp">
+        <!-- 待审核采购单：已替换为Servlet地址 /approver/auditList -->
+        <li class="sidebar-menu-item ${currentPage == '/approver/auditList' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/approver/auditList">
                 <span class="icon">✓</span>
                 <span>待审核采购单</span>
             </a>
         </li>
 
-        <!-- 我的审批记录：暂保留JSP路径，补完Servlet后替换为 /approver/auditRecord -->
-        <li class="sidebar-menu-item ${currentPage == '/approver/auditRecord.jsp' ? 'active' : ''}">
-            <a href="${pageContext.request.contextPath}/approver/auditRecord.jsp">
+        <!-- 我的审批记录：已替换为Servlet地址 /approver/auditRecord -->
+        <li class="sidebar-menu-item ${currentPage == '/approver/auditRecord' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/approver/auditRecord">
                 <span class="icon">☰</span>
                 <span>我的审批记录</span>
             </a>

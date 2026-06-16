@@ -1,4 +1,3 @@
-
 package com.material.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,5 +89,27 @@ public class PurchaseTemplateDao {
             try { conn.close(); } catch (Exception e) {}
         }
         return res;
+    }
+
+    // 仅新增统计模板总数，放在类最外层，不在任何方法内部
+    public int countAll() {
+        Connection conn = DBUtil.getConn();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT COUNT(*) FROM purchase_template";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {if(rs != null) rs.close();}catch(Exception e){}
+            try {if(pstmt != null) pstmt.close();}catch(Exception e){}
+            try {if(conn != null) conn.close();}catch(Exception e){}
+        }
+        return 0;
     }
 }
